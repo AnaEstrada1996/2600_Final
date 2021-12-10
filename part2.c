@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -240,7 +241,7 @@ void editorOpen(char *filename){
 	char *line = NULL;
 	size_t linecap = 0;
 	ssize_t linelen;
-	while((linelen = getline(&line, &linecap, fp)) != -1 {
+	while((linelen = getline(&line, &linecap, fp)) != -1) {
 		while(linelen > 0 && (line[linelen -1] == '\n' || line[linelen - 1] == '\r'))
 			linelen--;
 			editorAppendRow(line, linelen);
@@ -350,7 +351,7 @@ void editorDrawStatusBar(struct abuf *ab){
 
 
 void editorRefreshScreen(){
-	editorScroll(;
+	editorScroll();
 
 	struct abuf ab = ABUF_INIT;
 
@@ -368,6 +369,14 @@ void editorRefreshScreen(){
 
 	write(STDOUT_FILENO, ab.b, ab.len);
 	abFree(&ab);
+}
+
+void editorSetStatusMessage(const char *fmt, ...){
+	va_list ap;
+	va_start(ap, fmt);
+	vsnprintf(E.statusmsg, sizeof(E.statusmsg), fmt, ap);
+	va_end(ap);
+	E.statusmsg_time = time(NULL);
 }
 
 
@@ -475,6 +484,8 @@ int main(int argc, char *argv[]){
 	if(argc >= 2){
 		editorOpen(argv[1]);
 	}
+
+	editorSetStatusMessage("HELP: Ctrl-Q = quit");
 
 	while (1){
 		editorRefreshScreen();
