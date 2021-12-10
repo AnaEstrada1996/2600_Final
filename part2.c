@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -24,7 +25,7 @@
 #define KILO_TAB_STOP 8
 
 enum editorKey{
-	BACKSPACE = 127;
+	BACKSPACE = 127,
 	ARROW_LEFT = 1000,
 	ARROW_RIGHT,
 	ARROW_UP,
@@ -288,6 +289,21 @@ void editorOpen(char *filename){
 	fclose(fp);
 
 }
+
+void editorSave(){
+	if(E.filename == NULL) return;
+
+	int len;
+	char *buf = editorRowsToString(&len);
+	
+	int fd = open(E.filename, O_RDWR | O_CREAT, 0644);
+	ftruncate(fd, len);
+	write(fd, buf, len);
+	close(fd);
+	free(buf);
+}
+
+
 
 /*** append buffer ***/
 struct abuf{
