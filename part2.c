@@ -63,6 +63,12 @@ struct editorConfig{
 
 struct editorConfig E;
 
+/*** prototype ***/
+void editorSetStatusMessage(const char *fmt, ...);
+
+
+
+
 /***terminal***/
 void die(const char *s){
 	write(STDOUT_FILENO, "\x1b[2J", 4);
