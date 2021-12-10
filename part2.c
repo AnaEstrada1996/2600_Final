@@ -90,6 +90,12 @@ int getWindowSize(int *rows, int *cols){
 	}
 }
 
+/*** append buffer ***/
+struct abuf{
+	char *b;
+	int len;
+};
+
 /*** output ***/
 void editorDrawRows(){
 	int y;
