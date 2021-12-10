@@ -157,15 +157,28 @@ int getWindowSize(int *rows, int *cols){
 }
 
 /*** file i/o ***/
-void editorOpen(){
-	char *line = "Hello World!";
-	ssize_t linelen = 13;
+void editorOpen(char *filename){
+	FILE *fp = fopen(filename, "r");
+	if (!fp) die("fopen");
+	
+	char *line = NULL;
+	size_t linecap = 0;
+	ssize_t linelen;
+	linelen = getline(&line, &linecap, fp);
+	if(linelen != -1){
+		while (linelen > 0 && (line[linelen -1] == '\n' || line[linelen -1] == '\r'))
+			linelen--;
 
-	E.row.size = linelen;
-	E.row.chars = malloc(linelen +1);
-	memcpy(E.row.chars, line, linelen);
-	E.row.chars[linelen] = '\0';
-	E.numrows = 1;
+		E.row.size = linelen;
+		E.row.chars = malloc(linelen + 1);
+		memcpy(E.row.chars, line, linelen);
+		E.row.chars[linelen] = '\0';
+		E.numrows = 1;
+	}
+
+	free(line);
+	fclose(fp);
+
 }
 
 /*** append buffer ***/
@@ -308,22 +321,16 @@ void initEditor(){
 	if(getWindowSize(&E.screenrows, &E.screencols) == -1) die("getWindowSize");
 }
 
-int main(){
+int main(int argc, char *argv[]){
 	enableRawMode();
 	initEditor();
-	editorOpen();
+	if(argc >= 2){
+		editorOpen(argv[1]);
+	}
 
 	while (1){
 		editorRefreshScreen();
 		editorProcessKeypress();
-		char c = '\0';
-		if(read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) die("read");
-		if (iscntrl(c)){
-			printf("%d\r\n", c);
-		}else {
-			printf("%d ('%c')\r\n", c,c);
-		}
-		if(c == 'q') break;
 	}
 	return 0;
 }
