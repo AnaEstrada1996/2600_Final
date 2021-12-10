@@ -9,7 +9,16 @@
 #include <unistd.h>
 
 /***defines ***/
+#define KILO_VERSION "0.0.1"
 #define CTRL_KEY(k) ((k) & 0x1f)
+
+enum editorKey{
+	ARROW_LEFT = 'a',
+	ARROW_RIGHT = 'd',
+	ARROW_UP = 'w',
+	ARROW_DOWN = 's'
+};
+
 
 /***data***/
 struct editorConfig{
@@ -67,10 +76,10 @@ char editorReadKey(){
 
 		if(seq[0] == '['){
 			switch (seq[1]){
-				case 'A': return 'w';
-				case 'B': return 's';
-				case 'C': return 'd';
-				case 'D': return 'a';
+				case 'A': return ARROW_UP; 
+				case 'B': return ARROW_DOWN;
+				case 'C': return ARROW_RIGHT;
+				case 'D': return ARROW_LEFT;
 			}
 		}
 		return '\x1b';
@@ -139,7 +148,7 @@ void editorDrawRows(struct abuf *ab){
 	for(y = 0; y<E.screenrows; y++){
 		if(y == E.screenrows /3){
 			char welcome[80];
-			int welcomelen = snprintf(welcome, sizeof(welcome), "kilo editor -- version %s");
+			int welcomelen = snprintf(welcome, sizeof(welcome), "kilo editor -- version %s", KILO_VERSION);
 			if(welcomelen > E.screencols) welcomelen = E.screencols;
 			int padding = (E.screencols - welcomelen) /2;
 			if (padding){
@@ -181,16 +190,16 @@ void editorRefreshScreen(){
 /*** input ***/
 void editorMoveCursor(char key){
 	switch(key){
-		case 'a':
+		case ARROW_LEFT:
 			E.cx--;
 			break;
-		case'd':
+		case ARROW_RIGHT:
 			E.cx++;
 			break;
-		case 'w':
+		case ARROW_UP:
 			E.cy--;
 			break;
-		case 's':
+		case ARROW_DOWN:
 			E.cy++;
 			break;
 	}
@@ -206,10 +215,10 @@ void editorProcessKeypress(){
 			exit(0);
 			break;
 
-		case 'w':
-		case 's':
-		case 'a':
-		case 'd':
+		case ARROW_UP:
+		case ARROW_DOWN:
+		case ARROW_LEFT:
+		case ARROW_RIGHT:
 			editorMoveCursor(c);
 			break;
 	}
