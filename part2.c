@@ -1,6 +1,5 @@
 #include <ctype.h>
 #include <stdio.h>
-
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
@@ -18,7 +17,7 @@ void enableRawMode(){
 	struct termios raw = orig_termios;
 	
 
-	raw.c_lflag &= ~(ECHO | ICANON);
+	raw.c_lflag &= ~(ECHO | ICANON | ISIG);
 
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
