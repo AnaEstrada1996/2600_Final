@@ -244,7 +244,11 @@ void editorUpdateSyntax(erow *row){
 	if(E.syntax == NULL) return;
 
 	char **keywords = E.syntax->keywords;
+	char *mcs = E.syntax->multiline_comment_start;
+	char *mce = E.syntax->multiline_comment_end;
 
+	char mcs_len = mcs ? strlen(mcs) :0;
+	char mce_len = mce ? strlen(mce) : 0;
 	char *scs = E.syntax->singleline_comment_start;
 	int scs_len = scs ? strlen(scs) : 0;
 
