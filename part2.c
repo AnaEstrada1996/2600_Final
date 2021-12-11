@@ -232,14 +232,30 @@ void editorUpdateSyntax(erow *row){
 		char c = row->render[i];
 		unsigned char prev_hl = (i > 0 ) ? row->hl[i-1] : HL_NORMAL;
 
-		if(E.system->flags & HL_HIGHLIGHT_NUMBERS){
-			if(isdigit(c) && (prev_sep || prev_hl == HL_NUMBNER)) || (c == '.' && prev_hl == HL_NUMBER)){
+		if(E.system->flags & HL_HIGHLIGHT_NUMBERS || HL_HIGHLIGHT_STRINGS){
+			if(in string){
+				row->hl[i] = HL_STRING;
+				i++;
+				prev_sep = 1;
+				continue;
+			} else{
+				if(c == '"' || c == '\'') {
+					in_string = c;
+					row->hl[i] = HL_STRING;
+					i++;
+					continue;
+				}
+			}
+		}
+		if(E.syntax->flags & HL_HIGHLIGHT_NUMBERS){
+			if((isdigit(c) && (prev_sep || prev_hl == HL_NUMBER)) || (c == '.' && prev_hl == HL_NUMBER)){
 				row->hl[i] = HL_NUMBER;
 				i++;
 				prev_sep = 0;
 				continue;
 			}
 		}
+
 		prev_sep = is_separator(c);
 		i++;
 		i++;
