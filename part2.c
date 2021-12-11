@@ -235,6 +235,12 @@ void editorUpdateSyntax(erow *row){
 		if(E.system->flags & HL_HIGHLIGHT_NUMBERS || HL_HIGHLIGHT_STRINGS){
 			if(in string){
 				row->hl[i] = HL_STRING;
+				if(c== '\\' && i + 1 <row->rsize){
+					row->hl[i + 1] = HL_STRING;
+					i +=2;
+					continue;
+				}
+				if(c == in_string) in_string = 0;
 				i++;
 				prev_sep = 1;
 				continue;
