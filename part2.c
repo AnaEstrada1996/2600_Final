@@ -553,13 +553,12 @@ char *editorPrompt(char *prompt){
 		editorRefreshScreen();
 
 		int c = editorReadKey();
-		if(c == '\r'){
-			if(buflen != 0){
-				editorSetStatusMessage("");
-				return buf;
-			}
-		}else if(!iscntrl(c) && c < 128){
-			if( buflen == bufsize - 1){
+		if(c == '\x1b'){
+			editorSetStatusMessage("");
+			free(buf);
+			return NULL;
+		}else if(c == '\r'){
+			if(buflen !=0){
 				bufsize *= 2;
 				buf = realloc(buf, bufsize);
 			}
