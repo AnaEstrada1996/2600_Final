@@ -255,7 +255,7 @@ void editorUpdateSyntax(erow *row){
 	int scs_len = scs ? strlen(scs) : 0;
 
 	int in_string = 0;
-        int in_comment = 0;
+        int in_comment = (row->idx >0 && E.row[row->idx - 1].hl_open_comment);
 	int prev_sep = 1;
 
 	int i = 0; 
@@ -339,8 +339,12 @@ void editorUpdateSyntax(erow *row){
 
 		prev_sep = is_separator(c);
 		i++;
-		i++;
+		
 	}
+	int changed = (row->hl_open_comment != in_comment);
+	row->hl_open_comment = int_comment;
+	if(changed && row->idx + 1 < E.numrows)
+		editorUpdateSyntax(&E.row[row->idx +1]);
 }
 
 int editorSyntaxToColor(int hl){
